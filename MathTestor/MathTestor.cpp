@@ -7,7 +7,7 @@
 using namespace std;
 
 void drawMenu(int);
-void optionsMenu(char[]);
+void optionsMenu();
 void additionMenu(int, char[]);
 void subtractionMenu(int, char[]);
 void multiplicationMenu(int, char[]);
@@ -19,9 +19,9 @@ void multiplication(int);
 void division(int);
 
 int getRandomNumber(int);
-char getChoice(char[]);
-bool verifyChoice(char[], char);
-
+char getChoice(char[], int);
+bool verifyChoice(char[], char, int);
+string getDifficulty(int);
 int changeDifficulty(int);
 
 enum Menus
@@ -62,7 +62,7 @@ int main(){
 	{
 		drawMenu(MainMenu);
 		
-		switch (getChoice(mainMenuChoices))
+		switch (getChoice(mainMenuChoices, MAINMENUCHOICES))
 		{
 		case 'a':
 			additionMenu(additionDifficulty, arithmaticMenuChoices);
@@ -77,6 +77,7 @@ int main(){
 			divisionMenu(divisionDifficulty, arithmaticMenuChoices);
 			break;
 		case 'o':
+			optionsMenu();
 			break;
 		case 'q':
 			running = false;
@@ -104,11 +105,34 @@ int changeDifficulty(int difficulty)
 		break;
 		
 	default:
+		difficulty = Beginner;
 		break;
-
-		return difficulty;
+		
 	}
+	return difficulty;
+}
 
+string getDifficulty(int difficulty)
+{
+	string s;
+	switch (difficulty)
+	{
+	case Beginner:
+		s = "beginner";
+		break;
+	case Easy:
+		s = "easy";
+		break;
+	case Medium:
+		s = "medium";
+		break;
+	case Hard:
+		s = "hard";
+		break;
+	default:
+		break;
+	}
+	return s;
 }
 
 void drawMenu(int menu)
@@ -118,9 +142,78 @@ void drawMenu(int menu)
 	switch (menu)
 	{
 	case MainMenu:
+		cout << mainMenuChoices[0] << ": Addition"<< endl;
+		cout << mainMenuChoices[1] << ": Subtraction" << endl;
+		cout << mainMenuChoices[2] << ": Multiplication" << endl;
+		cout << mainMenuChoices[3] << ": Division" << endl;
+		cout << mainMenuChoices[4] << ": Options Menu" << endl;
+		cout << mainMenuChoices[5] << ": Exit Program" << endl;
+		cout << "Enter your choice [ ";
+		for (int i = 0; i < MAINMENUCHOICES; i++)
+		{
+			cout << mainMenuChoices[i] << " ";
+		}
+		cout << "]" << endl;
 		break;
 
 	case OptionsMenu:
+		cout << optionsMenuChoices[0] << ": Addition Difficulty : " << getDifficulty(additionDifficulty) << endl;
+		cout << optionsMenuChoices[1] << ": Subtraction Difficulty : " << getDifficulty(subtractionDifficulty) << endl;
+		cout << optionsMenuChoices[2] << ": multiplication Difficulty : " << getDifficulty(multiplicationDifficulty) << endl;
+		cout << optionsMenuChoices[3] << ": division Difficulty : " << getDifficulty(divisionDifficulty) << endl;
+		cout << optionsMenuChoices[4] << ": return to main menu" << endl;
+		cout << "Enter your choice [ ";
+		for (int i = 0; i < OPTIONSMENUCHOICES; i++)
+		{
+			cout << optionsMenuChoices[i] << " ";
+		}
+		cout << "]" << endl;
+		break;
+
+	case AdditionMenu:
+		cout << arithmaticMenuChoices[0] << ": Addition" << endl;
+		cout << arithmaticMenuChoices[1] << ": Addition Difficulty : " << getDifficulty(additionDifficulty) << endl;
+		cout << arithmaticMenuChoices[2] << ": Return to Main Menu" << endl;
+		for (int i = 0; i < ARITMATICMENUCHOICES; i++)
+		{
+			cout << arithmaticMenuChoices[i] << " ";
+		}
+		cout << "]" << endl;
+		break;
+
+		break;
+
+	case SubtractionMenu:
+		cout << arithmaticMenuChoices[0] << ": Subtraction" << endl;
+		cout << arithmaticMenuChoices[1] << ": Subtraction Difficulty : " << getDifficulty(subtractionDifficulty) << endl;
+		cout << arithmaticMenuChoices[2] << ": Return to Main Menu" << endl;
+		for (int i = 0; i < ARITMATICMENUCHOICES; i++)
+		{
+			cout << arithmaticMenuChoices[i] << " ";
+		}
+		cout << "]" << endl;
+		break;
+
+	case MultiplicationMenu:
+		cout << arithmaticMenuChoices[0] << ": Multiplication" << endl;
+		cout << arithmaticMenuChoices[1] << ": Multiplication Difficulty : " << getDifficulty(multiplicationDifficulty) << endl;
+		cout << arithmaticMenuChoices[2] << ": Return to Main Menu" << endl;
+		for (int i = 0; i < ARITMATICMENUCHOICES; i++)
+		{
+			cout << arithmaticMenuChoices[i] << " ";
+		}
+		cout << "]" << endl;
+		break;
+
+	case DivisionMenu:
+		cout << arithmaticMenuChoices[0] << ": Division" << endl;
+		cout << arithmaticMenuChoices[1] << ": Division Difficulty : " << getDifficulty(divisionDifficulty) << endl;
+		cout << arithmaticMenuChoices[2] << ": Return to Main Menu" << endl;
+		for (int i = 0; i < ARITMATICMENUCHOICES; i++)
+		{
+			cout << arithmaticMenuChoices[i] << " ";
+		}
+		cout << "]" << endl;
 		break;
 
 	default:
@@ -129,7 +222,7 @@ void drawMenu(int menu)
 
 }
 
-char getChoice(char list[])
+char getChoice(char list[], int size)
 {
 	bool failed = false;
 	char choice;
@@ -144,8 +237,8 @@ char getChoice(char list[])
 			cin.ignore(80, '\n');
 			failed = true;
 		}
-
-		if (!verifyChoice(list, choice))
+		choice = tolower(choice);
+		if (!verifyChoice(list, choice, size))
 		{
 			failed = true;
 		}
@@ -193,10 +286,12 @@ int getRandomNumber(int difficulty)
 	return number;
 }
 
-bool verifyChoice(char list[], char choice)
+bool verifyChoice(char list[], char choice, int size)
 {
 	bool found = false;
-	for (int i = 0; i < sizeof(list); i++)
+	
+	// apparently you cannot get sizeof an array after passing it into a function
+	for (int i = 0; i < size; i++)
 	{
 		if (choice == list[i])
 		{
@@ -204,6 +299,7 @@ bool verifyChoice(char list[], char choice)
 			break;
 		}
 	}
+
 	return found;
 }
 
@@ -214,7 +310,7 @@ void optionsMenu()
 	{
 
 		drawMenu(OptionsMenu);
-		switch (getChoice(optionsMenuChoices))
+		switch (getChoice(optionsMenuChoices, OPTIONSMENUCHOICES))
 		{
 		case 'a':
 			additionDifficulty = changeDifficulty(additionDifficulty); 
@@ -225,7 +321,7 @@ void optionsMenu()
 			break;
 
 		case 'm':
-			multiplicationDifficulty = changeDifficulty(subtractionDifficulty);
+			multiplicationDifficulty = changeDifficulty(multiplicationDifficulty);
 			break;
 
 		case 'd':
@@ -246,11 +342,11 @@ void optionsMenu()
 
 void additionMenu(int, char choices[])
 {
-	bool running;
+	bool running = true;
 	do
 	{
 		drawMenu(AdditionMenu);
-		switch (getChoice(choices))
+		switch (getChoice(choices , ARITMATICMENUCHOICES))
 		{
 		case 'a':
 			addition(additionDifficulty);
@@ -272,11 +368,11 @@ void additionMenu(int, char choices[])
 
 void subtractionMenu(int, char choices[])
 {
-	bool running;
+	bool running = true;
 	do
 	{
 		drawMenu(SubtractionMenu);
-		switch (getChoice(choices))
+		switch (getChoice(choices, ARITMATICMENUCHOICES))
 		{
 		case 'a':
 			subtraction(subtractionDifficulty);
@@ -298,11 +394,11 @@ void subtractionMenu(int, char choices[])
 
 void multiplicationMenu(int, char choices[])
 {
-	bool running;
+	bool running = true;
 	do
 	{
 		drawMenu(MultiplicationMenu);
-		switch (getChoice(choices))
+		switch (getChoice(choices, ARITMATICMENUCHOICES))
 		{
 		case 'a':
 			multiplication(multiplicationDifficulty);
@@ -324,11 +420,11 @@ void multiplicationMenu(int, char choices[])
 
 void divisionMenu(int, char choices[])
 {
-	bool running;
+	bool running = true;
 	do
 	{
 		drawMenu(DivisionMenu);
-		switch (getChoice(choices))
+		switch (getChoice(choices, ARITMATICMENUCHOICES))
 		{
 		case 'a':
 			division(divisionDifficulty);
