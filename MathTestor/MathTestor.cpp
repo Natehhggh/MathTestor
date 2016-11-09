@@ -1,3 +1,15 @@
+
+
+
+
+
+
+
+
+
+
+
+
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
@@ -7,13 +19,15 @@
 #include <list>
 #include <vector>
 #include <fstream>
+#include <algorithm>
+#include <sstream>
 
 using namespace std;
 
 void drawMenu(vector <char>, bool);
-void arithmatic(int, char, bool);
-void displayAnswers(string, int, int, char, bool, vector <char>, list <string> &);
-void displayEquation(char, int, int);
+void arithmatic(int, char, bool, ofstream&);
+void displayAnswers(vector <char>, vector <string> &);
+void displayEquation(char, int, int, ofstream &);
 char getCorrectAnswer();
 string getEquation(int, char, int& , int&);
 int getRandomNumber(int);
@@ -23,19 +37,48 @@ string getDifficulty(int);
 string getBool(bool);
 int changeDifficulty(int);
 void swapInt(int&, int&);
-bool checkDuplicateAnswers(string, list <string>);
-string getWrongAnswer(int, char, list <string>&, bool);
-void output(string);
+bool checkDuplicateAnswers(string, vector <string>);
+string getWrongAnswer(int, char, vector <string>&, bool);
+void output(ofstream&, string);
 
 
 int main(){
-	ofstream outputFile;
-	int difficulty = 5;
-	
+	time_t currentTime = time(NULL);
+	string name;
+	int difficulty;
 	bool allowNegatives = false;
 
+	cout << "Please Enter your Name: ";
+	cin >> name;
+	replace(name.begin(), name.end(), ' ', '_');
+	cout << "Please Choose a difficulty Level between 1 - 5 : ";
+	bool failed = false;
+	do
+	{
+		failed = false;
+		difficulty = 0;
+		cin >> difficulty;
+		if (cin.fail())
+		{
+			cin.clear();
+			cin.ignore(80, '\n');
+			failed = true;
+		}
+		if (difficulty > 5 || difficulty < 1)
+		{
+			failed = true;
+		}
+	} while (failed);
+	ofstream file(name);
+	
+	file << "PUT IN TIMESTAMP" << endl;
+	file << "Seed :" << currentTime << endl;
+	file << "Difficulty : " << difficulty << endl << endl << endl;
+	srand(currentTime);
+	
 
-	srand(time(NULL));
+
+	
 	vector <char> mainMenuChoices = { 'a', 'b', 'c', 'd', 'e', 'q' };
 	bool running = true;
 	do
@@ -45,19 +88,20 @@ int main(){
 		switch (getChoice(mainMenuChoices))
 		{
 		case 'a':
-			arithmatic(difficulty, 'a', allowNegatives);
+			arithmatic(difficulty, 'a', allowNegatives, file);
 			break;
 		case 'b':
-			arithmatic(difficulty, 'b', allowNegatives);
+			arithmatic(difficulty, 'b', allowNegatives, file);
 			break;
 		case 'c':
-			arithmatic(difficulty, 'c', allowNegatives);
+			arithmatic(difficulty, 'c', allowNegatives, file);
 			break;
 		case 'd':
-			arithmatic(difficulty, 'd', allowNegatives);
+			arithmatic(difficulty, 'd', allowNegatives, file);
 			break;
 		case 'e':
 			allowNegatives = !allowNegatives;
+			break;
 		case 'q':
 			running = false;
 			break;
@@ -68,14 +112,12 @@ int main(){
 	} while (running);
 	return 0;
 }
-/*
-void output(ofstream output, string s)
+
+void output(ofstream &file, string s)
 {
 	cout << s << endl;
-	output.open();
-	output << s;
-	output.close();
-}*/
+	file << s << endl;
+}
 
 int changeDifficulty(int difficulty)
 {
@@ -257,8 +299,9 @@ string getEquation(int difficulty, char type, int& x, int & y , bool allowNegati
 
 }
 
-void displayEquation(char type, int x, int y)
+void displayEquation(char type, int x, int y, ofstream &file)
 {
+	stringstream ss;
 	switch (type)
 	{
 	case 'a':
@@ -281,31 +324,29 @@ void displayEquation(char type, int x, int y)
 	default:
 		break;
 	}
-
-	cout << "    " << x << endl;
-	cout << "  " << type << " " << y << endl << endl;
+	ss << "    " << x;
+	output(file, ss.str());
+	ss.str("");
+	ss << "  " << type << ' ' << y << endl << endl;
+	output(file, ss.str());
+	ss.str("");
 }
 
 
 
-void displayAnswers(string answer, int correct, int difficulty, char type, bool allowNegatives, vector <char> listOfAnswers, list <string> &possibleAnswers )
+void displayAnswers( vector <char> listOfAnswers, vector <string> &possibleAnswers, ofstream &file )
 {
 	string wrongAnswer;
+	stringstream ss;
 	for (int i = 0; i < (listOfAnswers.size() - 1); i++)
 	{
-		if (correct == i)
-		{
-			cout << listOfAnswers[i] << ": " << answer << endl;
-		}
-		else
-		{
-			wrongAnswer = getWrongAnswer(difficulty, type, possibleAnswers, allowNegatives);
-			possibleAnswers.push_back(answer);
-			cout << listOfAnswers[i] << ": " << wrongAnswer << endl;
-		}
+			ss << listOfAnswers[i] << ": " << possibleAnswers[i];
+			output(file, ss.str());
+			ss.str("");
 	}
-	cout << listOfAnswers[listOfAnswers.size() - 1] << ": None of the Above" << endl;
-	possibleAnswers.clear();
+	ss << listOfAnswers[listOfAnswers.size() - 1] <<  ": None of the Above" ;
+	output(file, ss.str());
+	ss.str("");
 
 }
 
@@ -314,34 +355,58 @@ char getCorrectAnswer()
 	return rand() % 5;
 }
 
-void arithmatic(int difficulty, char type, bool allowNegatives)
+void arithmatic(int difficulty, char type, bool allowNegatives, ofstream &file)
 {
 	char choice;
-	int x, y;
-	list <string> possibleAnswers;
+	string str;
+	string answer;
+	int x = 0, y = 0;
+	vector <string> possibleAnswers;
 	vector <char> listOfAnswers = { 'a', 'b', 'c', 'd', 'e' };
 	int correctAnswer = getCorrectAnswer();
-	string answer = getEquation(difficulty, type, x, y, allowNegatives);
-	possibleAnswers.push_back(answer);
+	
+	
+	for (int i = 0; i < 4; i++)
+	{
+		if (i == correctAnswer)
+		{
+
+			do{
+				answer = getEquation(difficulty, type, x, y, allowNegatives);
+			} while (checkDuplicateAnswers(answer, possibleAnswers));
+		}
+		else
+		{
+			answer = getWrongAnswer(difficulty, type, possibleAnswers, allowNegatives);
+		}	
+		cout << answer << endl;
+		possibleAnswers.push_back(answer);
+	}
 	
 	for (int i = 0; i < 3; i++)
 	{
-		displayEquation(type, x, y);
-		displayAnswers(answer, correctAnswer, difficulty, type, allowNegatives, listOfAnswers, possibleAnswers);
+		displayEquation(type, x, y, file);
+		displayAnswers(listOfAnswers, possibleAnswers, file);
 		cout << "Correct answer = " << correctAnswer << endl;
 		choice = getChoice(listOfAnswers);
-		
+		str = choice;
+		output(file, str);
 		if (choice == listOfAnswers[correctAnswer])
 		{
+			output(file, "Correct Guess");
+			file << "Accuracy: " << (float)100 / (i + 1) << '%' << endl; 
+			system("pause");
 			break;
 		}
 		else
 		{
-			cout << "Incorrect Guess" << endl;
+			output(file,"Incorrect Guess");
 		}
 		system("pause");
-	}
 
+	}
+	file << "Accuracy: 0%" << endl;
+	possibleAnswers.clear();
 	
 }
 
@@ -353,7 +418,7 @@ void swapInt(int& x, int& y)
 	x = z;
 }
 
-string getWrongAnswer(int difficulty, char type, list <string> &possibleAnswers, bool allowNegatives)
+string getWrongAnswer(int difficulty, char type, vector <string> &possibleAnswers, bool allowNegatives)
 {
 	int x, y;
 	string value;
@@ -364,7 +429,7 @@ string getWrongAnswer(int difficulty, char type, list <string> &possibleAnswers,
 	return value;
 }
 
-bool checkDuplicateAnswers(string s, list <string> possibleAnswers)
+bool checkDuplicateAnswers(string s, vector <string> possibleAnswers)
 {
 	bool b = false;
 	for each (string t in possibleAnswers)
