@@ -12,7 +12,7 @@ using namespace std;
 
 void drawMenu(vector <char>, bool);
 void arithmatic(int, char, bool);
-void displayAnswers(char, int, char, vector <char>);
+void displayAnswers(string, int, int, char, bool, vector <char>, list <string> &);
 void displayEquation(char, int, int);
 char getCorrectAnswer();
 string getEquation(int, char, int& , int&);
@@ -36,7 +36,7 @@ int main(){
 
 
 	srand(time(NULL));
-	vector <char> mainMenuChoices = { 'a', 'b', 'c', 'd', 'q' };
+	vector <char> mainMenuChoices = { 'a', 'b', 'c', 'd', 'e', 'q' };
 	bool running = true;
 	do
 	{
@@ -56,6 +56,8 @@ int main(){
 		case 'd':
 			arithmatic(difficulty, 'd', allowNegatives);
 			break;
+		case 'e':
+			allowNegatives = !allowNegatives;
 		case 'q':
 			running = false;
 			break;
@@ -66,11 +68,14 @@ int main(){
 	} while (running);
 	return 0;
 }
-
-void output(string s)
+/*
+void output(ofstream output, string s)
 {
-
-}
+	cout << s << endl;
+	output.open();
+	output << s;
+	output.close();
+}*/
 
 int changeDifficulty(int difficulty)
 {
@@ -139,7 +144,8 @@ void drawMenu(vector <char> choices, bool allowNegatives)
 	cout << choices[1] << ": Subtraction" << endl;
 	cout << choices[2] << ": Multiplication" << endl;
 	cout << choices[3] << ": Division" << endl;
-	cout << choices[4] << ": Exit Program" << endl;
+	cout << choices[4] << ": Allow Negative Results : " << getBool(allowNegatives) << endl;
+	cout << choices[5] << ": Exit Program" << endl;
 	cout << "Enter your choice [ ";
 	for each (char choice in choices)
 	{
@@ -280,18 +286,14 @@ void displayEquation(char type, int x, int y)
 	cout << "  " << type << " " << y << endl << endl;
 }
 
-void displayAnswers(char correct, int difficulty, char type, bool allowNegatives, vector <char> listOfAnswers)
+
+
+void displayAnswers(string answer, int correct, int difficulty, char type, bool allowNegatives, vector <char> listOfAnswers, list <string> &possibleAnswers )
 {
-	int x, y;
-	string answer;
-	answer = getEquation(difficulty, type, x ,y, allowNegatives);
-	displayEquation(type, x, y);
 	string wrongAnswer;
-	list < string > possibleAnswers;
-	possibleAnswers.push_back(answer);
 	for (int i = 0; i < (listOfAnswers.size() - 1); i++)
 	{
-		if (correct == listOfAnswers[i])
+		if (correct == i)
 		{
 			cout << listOfAnswers[i] << ": " << answer << endl;
 		}
@@ -307,18 +309,40 @@ void displayAnswers(char correct, int difficulty, char type, bool allowNegatives
 
 }
 
-char getCorrectAnswer(vector <char> listOfAnswers)
+char getCorrectAnswer()
 {
-	return listOfAnswers[rand() % 5];
+	return rand() % 5;
 }
 
 void arithmatic(int difficulty, char type, bool allowNegatives)
 {
+	char choice;
+	int x, y;
+	list <string> possibleAnswers;
 	vector <char> listOfAnswers = { 'a', 'b', 'c', 'd', 'e' };
-	char correctAnswer = getCorrectAnswer(listOfAnswers);
-	displayAnswers(correctAnswer, difficulty, type, allowNegatives, listOfAnswers);
-	cout << "Correct answer = " << correctAnswer << endl;
-	system("pause");
+	int correctAnswer = getCorrectAnswer();
+	string answer = getEquation(difficulty, type, x, y, allowNegatives);
+	possibleAnswers.push_back(answer);
+	
+	for (int i = 0; i < 3; i++)
+	{
+		displayEquation(type, x, y);
+		displayAnswers(answer, correctAnswer, difficulty, type, allowNegatives, listOfAnswers, possibleAnswers);
+		cout << "Correct answer = " << correctAnswer << endl;
+		choice = getChoice(listOfAnswers);
+		
+		if (choice == listOfAnswers[correctAnswer])
+		{
+			break;
+		}
+		else
+		{
+			cout << "Incorrect Guess" << endl;
+		}
+		system("pause");
+	}
+
+	
 }
 
 void swapInt(int& x, int& y)
