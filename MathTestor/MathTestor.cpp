@@ -1,111 +1,60 @@
 #include <iostream>
+#include <stdio.h>
 #include <math.h>
 #include <cstdlib>
 #include <ctime>
 #include <string>
 #include <list>
+#include <vector>
+#include <fstream>
 
 using namespace std;
 
-
-//Menu Functions
-void drawMenu(int);
-void optionsMenu();
-void additionMenu(int, char[]);
-void subtractionMenu(int, char[]);
-void multiplicationMenu(int, char[]);
-void divisionMenu(int, char[]);
-
-//Functional Functions
-void addition(int);
-void subtraction(int);
-void multiplication(int);
-void division(int);
-
-//Framework Functions
-void displayAnswers(char, int, char);
-void displayEquation(char);
+void drawMenu(vector <char>, bool);
+void arithmatic(int, char, bool);
+void displayAnswers(char, int, char, vector <char>);
+void displayEquation(char, int, int);
 char getCorrectAnswer();
-string getEquation(int, char);
+string getEquation(int, char, int& , int&);
 int getRandomNumber(int);
-char getChoice(char[], int);
-bool verifyChoice(char[], char, int);
+char getChoice(vector <char>);
+bool verifyChoice(vector <char>, char);
 string getDifficulty(int);
 string getBool(bool);
 int changeDifficulty(int);
-void swapXY();
-bool checkDuplicateAnswers(string);
-string getWrongAnswer(int, char);
+void swapInt(int&, int&);
+bool checkDuplicateAnswers(string, list <string>);
+string getWrongAnswer(int, char, list <string>&, bool);
+void output(string);
 
-//Enums
-enum Menus
-{
-	MainMenu,
-	OptionsMenu,
-	AdditionMenu,
-	SubtractionMenu,
-	MultiplicationMenu,
-	DivisionMenu
-};
-
-enum Difficulty
-{
-	Beginner,
-	Easy,
-	Medium,
-	Hard,
-	Challenging
-};
-
-//Constant
-const int MAINMENUCHOICES = 6;
-const int OPTIONSMENUCHOICES = 6;
-const int  ARITMATICMENUCHOICES= 3;
-const int NUMBEROFANSWERS = 5;
-
-//Global Array
-char mainMenuChoices[MAINMENUCHOICES] = { 'a', 'b', 'c', 'd', 'o', 'q'  };
-char optionsMenuChoices[OPTIONSMENUCHOICES] = { 'a', 's', 'm', 'd', 'e', 'r' };
-char arithmaticMenuChoices[ARITMATICMENUCHOICES] = { 'a', 'd', 'r' };
-char listOfAnswers[NUMBEROFANSWERS] = { 'a', 'b', 'c', 'd' , 'e'};
-
-//Difficulty Settings
-int additionDifficulty = Beginner;
-int subtractionDifficulty = Beginner;
-int multiplicationDifficulty = Beginner;
-int divisionDifficulty = Beginner;
-int allowNegatives = true;
-
-//Global Variables
-int x, y;
-string answer;
-char currentAnswer;
-
-list < string > possibleAnswers;
 
 int main(){
+	ofstream outputFile;
+	int difficulty = 5;
+	
+	bool allowNegatives = false;
+
+
 	srand(time(NULL));
+	vector <char> mainMenuChoices = { 'a', 'b', 'c', 'd', 'q' };
 	bool running = true;
 	do
 	{
-		drawMenu(MainMenu);
+		drawMenu(mainMenuChoices, allowNegatives);
 		
-		switch (getChoice(mainMenuChoices, MAINMENUCHOICES))
+		switch (getChoice(mainMenuChoices))
 		{
 		case 'a':
-			additionMenu(additionDifficulty, arithmaticMenuChoices);
+			arithmatic(difficulty, 'a', allowNegatives);
 			break;
 		case 'b':
-			subtractionMenu(subtractionDifficulty, arithmaticMenuChoices);
+			arithmatic(difficulty, 'b', allowNegatives);
 			break;
 		case 'c':
-			multiplicationMenu(multiplicationDifficulty, arithmaticMenuChoices);
+			arithmatic(difficulty, 'c', allowNegatives);
 			break;
 		case 'd':
-			divisionMenu(divisionDifficulty, arithmaticMenuChoices);
-			break;
-		case 'o':
-			optionsMenu();
+			arithmatic(difficulty, 'd', allowNegatives);
 			break;
 		case 'q':
 			running = false;
@@ -118,23 +67,28 @@ int main(){
 	return 0;
 }
 
+void output(string s)
+{
+
+}
+
 int changeDifficulty(int difficulty)
 {
 	switch (difficulty)
 	{
-	case Beginner:
-	case Easy:
-	case Medium:
-	case Hard:
+	case 1:
+	case 2:
+	case 3:
+	case 4:
 		difficulty++;
 		break;
 
-	case Challenging:
-			difficulty = Beginner;
+	case 5:
+			difficulty = 1;
 		break;
 		
 	default:
-		difficulty = Beginner;
+		difficulty = 1;
 		break;
 		
 	}
@@ -146,19 +100,19 @@ string getDifficulty(int difficulty)
 	string s;
 	switch (difficulty)
 	{
-	case Beginner:
+	case 1:
 		s = "beginner";
 		break;
-	case Easy:
+	case 2:
 		s = "easy";
 		break;
-	case Medium:
+	case 3:
 		s = "medium";
 		break;
-	case Hard:
+	case 4:
 		s = "hard";
 		break;
-	case Challenging:
+	case 5:
 		s = "challenging";
 	default:
 		break;
@@ -178,99 +132,23 @@ string getBool(bool b)
 	}
 }
 
-void drawMenu(int menu)
+void drawMenu(vector <char> choices, bool allowNegatives)
 {
-
 	system("cls");
-	switch (menu)
+	cout << choices[0] << ": Addition"<< endl;
+	cout << choices[1] << ": Subtraction" << endl;
+	cout << choices[2] << ": Multiplication" << endl;
+	cout << choices[3] << ": Division" << endl;
+	cout << choices[4] << ": Exit Program" << endl;
+	cout << "Enter your choice [ ";
+	for each (char choice in choices)
 	{
-	case MainMenu:
-		cout << mainMenuChoices[0] << ": Addition"<< endl;
-		cout << mainMenuChoices[1] << ": Subtraction" << endl;
-		cout << mainMenuChoices[2] << ": Multiplication" << endl;
-		cout << mainMenuChoices[3] << ": Division" << endl;
-		cout << mainMenuChoices[4] << ": Options Menu" << endl;
-		cout << mainMenuChoices[5] << ": Exit Program" << endl;
-		cout << "Enter your choice [ ";
-		for (int i = 0; i < MAINMENUCHOICES; i++)
-		{
-			cout << mainMenuChoices[i] << " ";
-		}
-		cout << "]" << endl;
-		break;
-
-	case OptionsMenu:
-		cout << optionsMenuChoices[0] << ": Addition Difficulty : " << getDifficulty(additionDifficulty) << endl;
-		cout << optionsMenuChoices[1] << ": Subtraction Difficulty : " << getDifficulty(subtractionDifficulty) << endl;
-		cout << optionsMenuChoices[2] << ": multiplication Difficulty : " << getDifficulty(multiplicationDifficulty) << endl;
-		cout << optionsMenuChoices[3] << ": division Difficulty : " << getDifficulty(divisionDifficulty) << endl;
-		cout << optionsMenuChoices[4] << ": Allow Negative Values : " << getBool(allowNegatives) << endl;
-		cout << optionsMenuChoices[5] << ": return to main menu" << endl;
-		cout << "Enter your choice [ ";
-		for (int i = 0; i < OPTIONSMENUCHOICES; i++)
-		{
-			cout << optionsMenuChoices[i] << " ";
-		}
-		cout << "]" << endl;
-		break;
-
-	case AdditionMenu:
-		cout << arithmaticMenuChoices[0] << ": Addition" << endl;
-		cout << arithmaticMenuChoices[1] << ": Addition Difficulty : " << getDifficulty(additionDifficulty) << endl;
-		cout << arithmaticMenuChoices[2] << ": Return to Main Menu" << endl;
-		cout << "Enter your choice [ ";
-		for (int i = 0; i < ARITMATICMENUCHOICES; i++)
-		{
-			cout << arithmaticMenuChoices[i] << " ";
-		}
-		cout << "]" << endl;
-		break;
-
-		break;
-
-	case SubtractionMenu:
-		cout << arithmaticMenuChoices[0] << ": Subtraction" << endl;
-		cout << arithmaticMenuChoices[1] << ": Subtraction Difficulty : " << getDifficulty(subtractionDifficulty) << endl;
-		cout << arithmaticMenuChoices[2] << ": Return to Main Menu" << endl;
-		cout << "Enter your choice [ ";
-		for (int i = 0; i < ARITMATICMENUCHOICES; i++)
-		{
-			cout << arithmaticMenuChoices[i] << " ";
-		}
-		cout << "]" << endl;
-		break;
-
-	case MultiplicationMenu:
-		cout << arithmaticMenuChoices[0] << ": Multiplication" << endl;
-		cout << arithmaticMenuChoices[1] << ": Multiplication Difficulty : " << getDifficulty(multiplicationDifficulty) << endl;
-		cout << arithmaticMenuChoices[2] << ": Return to Main Menu" << endl;
-		cout << "Enter your choice [ ";
-		for (int i = 0; i < ARITMATICMENUCHOICES; i++)
-		{
-			cout << arithmaticMenuChoices[i] << " ";
-		}
-		cout << "]" << endl;
-		break;
-
-	case DivisionMenu:
-		cout << arithmaticMenuChoices[0] << ": Division" << endl;
-		cout << arithmaticMenuChoices[1] << ": Division Difficulty : " << getDifficulty(divisionDifficulty) << endl;
-		cout << arithmaticMenuChoices[2] << ": Return to Main Menu" << endl;
-		cout << "Enter your choice [ ";
-		for (int i = 0; i < ARITMATICMENUCHOICES; i++)
-		{
-			cout << arithmaticMenuChoices[i] << " ";
-		}
-		cout << "]" << endl;
-		break;
-
-	default:
-		break;
+		cout << choice << " ";
 	}
-
+		cout << "]" << endl;
 }
 
-char getChoice(char list[], int size)
+char getChoice(vector <char> list)
 {
 	bool failed = false;
 	char choice;
@@ -286,7 +164,7 @@ char getChoice(char list[], int size)
 			failed = true;
 		}
 		choice = tolower(choice);
-		if (!verifyChoice(list, choice, size))
+		if (!verifyChoice(list, choice))
 		{
 			failed = true;
 		}
@@ -298,55 +176,17 @@ char getChoice(char list[], int size)
 
 int getRandomNumber(int difficulty)
 {
-	int number, rangeMin, rangeMax;
-
-	switch (difficulty)
-	{
-
-	case Beginner:
-		rangeMin = 0;
-		rangeMax = 10;
-		break;
-
-	case Easy:
-		rangeMin = 10;
-		rangeMax = 100;
-
-		break;
-
-	case Medium:
-		rangeMin = 100;
-		rangeMax = 1000;
-		break;
-
-	case Hard:
-		rangeMin = 1000;
-		rangeMax = 10000;
-		break;
-
-	case Challenging:
-		rangeMin = 10000;
-		rangeMax = 100000;
-		break;
-
-	default:
-		break;
-	}
-
-
-	number = rand() % rangeMax + rangeMin;
-
-	return number;
+	return rand() % (int)(pow(10, difficulty) - (int)pow(10, difficulty - 1)) + (int)pow(10, difficulty - 1);
 }
 
-bool verifyChoice(char list[], char choice, int size)
+bool verifyChoice(vector <char> list, char choice)
 {
 	bool found = false;
 	
 	// apparently you cannot get sizeof an array after passing it into a function
-	for (int i = 0; i < size; i++)
+	for each (char option in list)
 	{
-		if (choice == list[i])
+		if (choice == option)
 		{
 			found = true;
 			break;
@@ -356,152 +196,7 @@ bool verifyChoice(char list[], char choice, int size)
 	return found;
 }
 
-void optionsMenu()
-{
-	bool running = true;
-	do
-	{
-
-		drawMenu(OptionsMenu);
-		switch (getChoice(optionsMenuChoices, OPTIONSMENUCHOICES))
-		{
-		case 'a':
-			additionDifficulty = changeDifficulty(additionDifficulty); 
-			break;
-
-		case 's':
-			subtractionDifficulty = changeDifficulty(subtractionDifficulty);
-			break;
-
-		case 'm':
-			multiplicationDifficulty = changeDifficulty(multiplicationDifficulty);
-			break;
-
-		case 'd':
-			divisionDifficulty = changeDifficulty(divisionDifficulty);
-			break;
-
-		case'e':
-			allowNegatives = !allowNegatives;
-			break;
-
-		case 'r':
-			running = false;
-			break;
-
-		default:
-			break;
-		}
-
-
-	} while (running);
-}
-
-void additionMenu(int, char choices[])
-{
-	bool running = true;
-	do
-	{
-		drawMenu(AdditionMenu);
-		switch (getChoice(choices , ARITMATICMENUCHOICES))
-		{
-		case 'a':
-			addition(additionDifficulty);
-			break;
-
-		case 'd':
-			additionDifficulty = changeDifficulty(additionDifficulty);
-			break;
-
-		case 'r':
-			running = false;
-			break;
-
-		default:
-			break;
-		}
-	} while (running);
-}
-
-void subtractionMenu(int, char choices[])
-{
-	bool running = true;
-	do
-	{
-		drawMenu(SubtractionMenu);
-		switch (getChoice(choices, ARITMATICMENUCHOICES))
-		{
-		case 'a':
-			subtraction(subtractionDifficulty);
-			break;
-
-		case 'd':
-			subtractionDifficulty = changeDifficulty(subtractionDifficulty);
-			break;
-
-		case 'r':
-			running = false;
-			break;
-
-		default:
-			break;
-		}
-	} while (running);
-}
-
-void multiplicationMenu(int, char choices[])
-{
-	bool running = true;
-	do
-	{
-		drawMenu(MultiplicationMenu);
-		switch (getChoice(choices, ARITMATICMENUCHOICES))
-		{
-		case 'a':
-			multiplication(multiplicationDifficulty);
-			break;
-
-		case 'd':
-			multiplicationDifficulty = changeDifficulty(multiplicationDifficulty);
-			break;
-
-		case 'r':
-			running = false;
-			break;
-
-		default:
-			break;
-		}
-	} while (running);
-}
-
-void divisionMenu(int, char choices[])
-{
-	bool running = true;
-	do
-	{
-		drawMenu(DivisionMenu);
-		switch (getChoice(choices, ARITMATICMENUCHOICES))
-		{
-		case 'a':
-			division(divisionDifficulty);
-			break;
-
-		case 'd':
-			divisionDifficulty = changeDifficulty(divisionDifficulty);
-			break;
-
-		case 'r':
-			running = false;
-			break;
-
-		default:
-			break;
-		}
-	} while (running);
-}
-
-string getEquation(int difficulty, char type)
+string getEquation(int difficulty, char type, int& x, int & y , bool allowNegatives)
 {
 	x = getRandomNumber(difficulty);
 	y = getRandomNumber(difficulty);
@@ -511,14 +206,13 @@ string getEquation(int difficulty, char type)
 		//addition
 	case 'a':
 		z =  to_string(x + y);
-		
-		
+				
 		break;
 		//subtraction
 	case 'b':
 		if (!allowNegatives && y > x)
 		{
-			swapXY();
+			swapInt(x, y);
 		}
 		z = to_string(x - y);
 		
@@ -536,12 +230,11 @@ string getEquation(int difficulty, char type)
 		}
 		else
 		{
-
 			//cout << "x: " << x << endl;
 			//cout << "y: " << y << endl;
 			if (x != 0 && y > x)
 			{
-				swapXY();
+				swapInt(x , y);
 			}
 			while (x%y != 0)
 			{
@@ -558,16 +251,45 @@ string getEquation(int difficulty, char type)
 
 }
 
-void displayEquation(char type)
+void displayEquation(char type, int x, int y)
 {
+	switch (type)
+	{
+	case 'a':
+		type = '+';
+		break;
+
+	case 'b':
+		type = '-';
+		break;
+
+	case 'c':
+		type = '*';
+		break;
+
+	case 'd':
+		type = '/';
+		break;
+
+			
+	default:
+		break;
+	}
+
 	cout << "    " << x << endl;
 	cout << "  " << type << " " << y << endl << endl;
 }
 
-void displayAnswers(char correct, int difficulty, char type)
+void displayAnswers(char correct, int difficulty, char type, bool allowNegatives, vector <char> listOfAnswers)
 {
-	currentAnswer = correct;
-	for (int i = 0; i < NUMBEROFANSWERS - 1; i++)
+	int x, y;
+	string answer;
+	answer = getEquation(difficulty, type, x ,y, allowNegatives);
+	displayEquation(type, x, y);
+	string wrongAnswer;
+	list < string > possibleAnswers;
+	possibleAnswers.push_back(answer);
+	for (int i = 0; i < (listOfAnswers.size() - 1); i++)
 	{
 		if (correct == listOfAnswers[i])
 		{
@@ -575,71 +297,31 @@ void displayAnswers(char correct, int difficulty, char type)
 		}
 		else
 		{
-			cout << listOfAnswers[i] << ": " << getWrongAnswer(difficulty, type) << endl;
+			wrongAnswer = getWrongAnswer(difficulty, type, possibleAnswers, allowNegatives);
+			possibleAnswers.push_back(answer);
+			cout << listOfAnswers[i] << ": " << wrongAnswer << endl;
 		}
 	}
-	cout << listOfAnswers[NUMBEROFANSWERS - 1] << ": None of the Above" << endl;
-
-}
-
-char getCorrectAnswer()
-{
-	return listOfAnswers[rand() % NUMBEROFANSWERS];
-}
-
-void addition(int difficulty)
-{
-	char type = 'a';
-	answer = getEquation(difficulty, type);
-	possibleAnswers.push_back(answer);
-	displayEquation('+');
-	displayAnswers(getCorrectAnswer(), difficulty, type);
-
-	cout << "Current Answer = " << currentAnswer << endl;
+	cout << listOfAnswers[listOfAnswers.size() - 1] << ": None of the Above" << endl;
 	possibleAnswers.clear();
+
+}
+
+char getCorrectAnswer(vector <char> listOfAnswers)
+{
+	return listOfAnswers[rand() % 5];
+}
+
+void arithmatic(int difficulty, char type, bool allowNegatives)
+{
+	vector <char> listOfAnswers = { 'a', 'b', 'c', 'd', 'e' };
+	char correctAnswer = getCorrectAnswer(listOfAnswers);
+	displayAnswers(correctAnswer, difficulty, type, allowNegatives, listOfAnswers);
+	cout << "Correct answer = " << correctAnswer << endl;
 	system("pause");
 }
 
-void subtraction(int difficulty)
-{
-	char type = 'b';
-	answer = getEquation(difficulty, type);
-	possibleAnswers.push_back(answer);
-	displayEquation('-');
-	displayAnswers(getCorrectAnswer(), difficulty, type);
-
-	cout << "Current Answer = " << currentAnswer << endl;
-	possibleAnswers.clear();
-	system("pause");
-}
-
-void multiplication(int difficulty)
-{
-	char type = 'c';
-	answer = getEquation(difficulty, type);
-	possibleAnswers.push_back(answer);
-	displayEquation('*');
-	displayAnswers(getCorrectAnswer(), difficulty, type);
-
-	cout << "Current Answer = " << currentAnswer << endl;
-	possibleAnswers.clear();
-	system("pause");
-}
-
-void division(int difficulty)
-{
-	char type = 'd';
-	answer = getEquation(difficulty, type);
-	possibleAnswers.push_back(answer);
-	displayEquation('/');
-	displayAnswers(getCorrectAnswer(), difficulty, type);
-
-	cout << "Current Answer = " << currentAnswer << endl;
-	possibleAnswers.clear();
-	system("pause");	
-}
-
-void swapXY()
+void swapInt(int& x, int& y)
 {
 	int z;
 	z = y;
@@ -647,17 +329,18 @@ void swapXY()
 	x = z;
 }
 
-string getWrongAnswer(int difficulty, char type)
+string getWrongAnswer(int difficulty, char type, list <string> &possibleAnswers, bool allowNegatives)
 {
+	int x, y;
 	string value;
 	do{
-		value = getEquation(difficulty, type);
-	} while (checkDuplicateAnswers(value));
+		value = getEquation(difficulty, type, x, y, allowNegatives);
+	} while (checkDuplicateAnswers(value, possibleAnswers));
 	possibleAnswers.push_back(value);
 	return value;
 }
 
-bool checkDuplicateAnswers(string s)
+bool checkDuplicateAnswers(string s, list <string> possibleAnswers)
 {
 	bool b = false;
 	for each (string t in possibleAnswers)

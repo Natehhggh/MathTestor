@@ -1,10 +1,10 @@
-﻿Build started 10/24/2016 5:13:33 PM.
+﻿Build started 11/8/2016 6:36:30 PM.
      1>Project "C:\Users\Nate\Documents\Visual Studio 2013\Projects\C++\Proj2\MathTestor\MathTestor\MathTestor.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt MathTestor.cpp
          MathTestor.cpp
-     1>c:\users\nate\documents\visual studio 2013\projects\c++\proj2\mathtestor\mathtestor\mathtestor.cpp(87): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
-     1>c:\users\nate\documents\visual studio 2013\projects\c++\proj2\mathtestor\mathtestor\mathtestor.cpp(207): warning C4800: 'int' : forcing value to bool 'true' or 'false' (performance warning)
+     1>c:\users\nate\documents\visual studio 2013\projects\c++\proj2\mathtestor\mathtestor\mathtestor.cpp(38): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+     1>c:\users\nate\documents\visual studio 2013\projects\c++\proj2\mathtestor\mathtestor\mathtestor.cpp(292): warning C4018: '<' : signed/unsigned mismatch
        Link:
          C:\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Nate\Documents\Visual Studio 2013\Projects\C++\Proj2\MathTestor\Debug\MathTestor.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Nate\Documents\Visual Studio 2013\Projects\C++\Proj2\MathTestor\Debug\MathTestor.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Nate\Documents\Visual Studio 2013\Projects\C++\Proj2\MathTestor\Debug\MathTestor.lib" /MACHINE:X86 Debug\MathTestor.obj
          MathTestor.vcxproj -> C:\Users\Nate\Documents\Visual Studio 2013\Projects\C++\Proj2\MathTestor\Debug\MathTestor.exe
@@ -12,4 +12,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:03.14
+Time Elapsed 00:00:02.99
