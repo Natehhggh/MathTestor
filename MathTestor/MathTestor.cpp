@@ -1,15 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
@@ -26,7 +14,7 @@ using namespace std;
 
 void drawMenu(vector <char>, bool);
 void arithmatic(int, char, bool, ofstream&);
-void displayAnswers(vector <char>, vector <string> &);
+void displayAnswers(vector <char>, vector <string>, ofstream&);
 void displayEquation(char, int, int, ofstream &);
 char getCorrectAnswer();
 string getEquation(int, char, int& , int&);
@@ -69,7 +57,7 @@ int main(){
 			failed = true;
 		}
 	} while (failed);
-	ofstream file(name);
+	ofstream file(name + ".txt");
 	
 	file << "PUT IN TIMESTAMP" << endl;
 	file << "Seed :" << currentTime << endl;
@@ -318,10 +306,9 @@ void displayEquation(char type, int x, int y, ofstream &file)
 
 	case 'd':
 		type = '/';
-		break;
-
-			
+		break;		
 	default:
+		type = '+';
 		break;
 	}
 	ss << "    " << x;
@@ -334,17 +321,16 @@ void displayEquation(char type, int x, int y, ofstream &file)
 
 
 
-void displayAnswers( vector <char> listOfAnswers, vector <string> &possibleAnswers, ofstream &file )
+void displayAnswers( vector <char> choices, vector <string> listOfAnswers, ofstream &file )
 {
-	string wrongAnswer;
 	stringstream ss;
-	for (int i = 0; i < (listOfAnswers.size() - 1); i++)
+	for (unsigned int i = 0; i < (choices.size() - 1); i++)
 	{
-			ss << listOfAnswers[i] << ": " << possibleAnswers[i];
+			ss << choices[i] << ": " << listOfAnswers[i];
 			output(file, ss.str());
 			ss.str("");
 	}
-	ss << listOfAnswers[listOfAnswers.size() - 1] <<  ": None of the Above" ;
+	ss << choices[choices.size() - 1] <<  ": None of the Above" ;
 	output(file, ss.str());
 	ss.str("");
 
@@ -357,12 +343,13 @@ char getCorrectAnswer()
 
 void arithmatic(int difficulty, char type, bool allowNegatives, ofstream &file)
 {
+	
 	char choice;
 	string str;
 	string answer;
 	int x = 0, y = 0;
-	vector <string> possibleAnswers;
-	vector <char> listOfAnswers = { 'a', 'b', 'c', 'd', 'e' };
+	vector <string> listOfAnswers;
+	vector <char> choices = { 'a', 'b', 'c', 'd', 'e' };
 	int correctAnswer = getCorrectAnswer();
 	
 	
@@ -373,25 +360,27 @@ void arithmatic(int difficulty, char type, bool allowNegatives, ofstream &file)
 
 			do{
 				answer = getEquation(difficulty, type, x, y, allowNegatives);
-			} while (checkDuplicateAnswers(answer, possibleAnswers));
+			} while (checkDuplicateAnswers(answer, listOfAnswers));
 		}
 		else
 		{
-			answer = getWrongAnswer(difficulty, type, possibleAnswers, allowNegatives);
+			answer = getWrongAnswer(difficulty, type, listOfAnswers, allowNegatives);
 		}	
 		cout << answer << endl;
-		possibleAnswers.push_back(answer);
+		listOfAnswers.push_back(answer);
 	}
 	
 	for (int i = 0; i < 3; i++)
 	{
+		system("cls");
 		displayEquation(type, x, y, file);
-		displayAnswers(listOfAnswers, possibleAnswers, file);
+		displayAnswers(choices, listOfAnswers, file);
 		cout << "Correct answer = " << correctAnswer << endl;
-		choice = getChoice(listOfAnswers);
+		cout << "Please enter your choice: ";
+		choice = getChoice(choices);
 		str = choice;
 		output(file, str);
-		if (choice == listOfAnswers[correctAnswer])
+		if (choice == choices[correctAnswer])
 		{
 			output(file, "Correct Guess");
 			file << "Accuracy: " << (float)100 / (i + 1) << '%' << endl; 
@@ -403,11 +392,12 @@ void arithmatic(int difficulty, char type, bool allowNegatives, ofstream &file)
 			output(file,"Incorrect Guess");
 		}
 		system("pause");
-
+		if (i == 2)
+		{
+			file << "Accuracy: 0%" << endl;
+		}
 	}
-	file << "Accuracy: 0%" << endl;
-	possibleAnswers.clear();
-	
+	listOfAnswers.clear();
 }
 
 void swapInt(int& x, int& y)
@@ -418,21 +408,21 @@ void swapInt(int& x, int& y)
 	x = z;
 }
 
-string getWrongAnswer(int difficulty, char type, vector <string> &possibleAnswers, bool allowNegatives)
+string getWrongAnswer(int difficulty, char type, vector <string> &listOfAnswers, bool allowNegatives)
 {
 	int x, y;
 	string value;
 	do{
 		value = getEquation(difficulty, type, x, y, allowNegatives);
-	} while (checkDuplicateAnswers(value, possibleAnswers));
-	possibleAnswers.push_back(value);
+	} while (checkDuplicateAnswers(value, listOfAnswers));
+	listOfAnswers.push_back(value);
 	return value;
 }
 
-bool checkDuplicateAnswers(string s, vector <string> possibleAnswers)
+bool checkDuplicateAnswers(string s, vector <string> listOfAnswers)
 {
 	bool b = false;
-	for each (string t in possibleAnswers)
+	for each (string t in listOfAnswers)
 	{
 		//cout << " X : " << x << " , y : " << y << " , S : " << s << ", T : " << t <<endl;
 		if (!s.compare(t))

@@ -1,14 +1,14 @@
 PUT IN TIMESTAMP
-Seed :1478728665
+Seed :1478734873
 Difficulty : 1
 
 
-    1
-  + 8
+    6
+  + 2
 
 
-a: 13
-b: 13
-c: 9
-d: 4
+a: 11
+b: 11
+c: 8
+d: 16
 e: None of the Above
