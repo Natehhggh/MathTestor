@@ -1,3 +1,27 @@
+/* -----------------------------------------------------------------------------
+
+FILE:              MathTestor.CPP
+
+DESCRIPTION:		Tests Math skills by giving random problems to solve
+
+COMPILER:          Visual Studio 2013
+
+NOTES:             Final Version
+
+MODIFICATION HISTORY:
+
+Author                  Date               Version
+---------------         ----------         --------------
+Nathan Blau				2016-10-18				1
+Nathan Blau				2016-10-19				2
+Nathan Blau				2016-10-20				3
+Nathan Blau				2016-10-24				4
+Nathan Blau				2016-11-8				5
+Nathan Blau				2016-11-9				6
+Nathan Blau				2016-11-9				7
+Nathan Blau				2016-11-10				8
+Nathan Blau				2016-11-10				9
+----------------------------------------------------------------------------- */
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
@@ -16,26 +40,29 @@ void drawMenu(vector <char>, bool);
 void arithmatic(int, char, bool, ofstream&);
 void displayAnswers(vector <char>, vector <string>, ofstream&);
 void displayEquation(char, int, int, ofstream &);
-char getCorrectAnswer();
+int getCorrectAnswer();
 string getEquation(int, char, int& , int&);
 int getRandomNumber(int);
 char getChoice(vector <char>);
 bool verifyChoice(vector <char>, char);
-string getDifficulty(int);
 string getBool(bool);
-int changeDifficulty(int);
 void swapInt(int&, int&);
 bool checkDuplicateAnswers(string, vector <string>);
-string getWrongAnswer(int, char, vector <string>&, bool);
+string getWrongAnswer(int, char, vector <string>, bool);
 void output(ofstream&, string);
 
-
+/* -----------------------------------------------------------------------------
+FUNCTION:          main()
+DESCRIPTION:       main function, calls other functions based on user input
+RETURNS:           int
+NOTES:
+----------------------------------------------------------------------------- */
 int main(){
-	time_t currentTime = time(NULL);
+	time_t currentTime = time(0);
+	struct tm * now = localtime(&currentTime);
 	string name;
 	int difficulty;
 	bool allowNegatives = false;
-
 	cout << "Please Enter your Name: ";
 	cin >> name;
 	replace(name.begin(), name.end(), ' ', '_');
@@ -58,15 +85,17 @@ int main(){
 		}
 	} while (failed);
 	ofstream file(name + ".txt");
+	file << now->tm_mon + 1 << '-';
+	file << now->tm_mday << '-';
+	file << now->tm_year + 1900 << ' ';
+	file << now->tm_hour << ':';
+	file << now->tm_min << ':';
+	file << now->tm_sec << endl;
 	
-	file << "PUT IN TIMESTAMP" << endl;
 	file << "Seed :" << currentTime << endl;
 	file << "Difficulty : " << difficulty << endl << endl << endl;
 	srand(currentTime);
-	
 
-
-	
 	vector <char> mainMenuChoices = { 'a', 'b', 'c', 'd', 'e', 'q' };
 	bool running = true;
 	do
@@ -101,60 +130,25 @@ int main(){
 	return 0;
 }
 
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          output()
+DESCRIPTION:       outputs string input to screen and output file
+RETURNS:           void
+NOTES:
+----------------------------------------------------------------------------- */
 void output(ofstream &file, string s)
 {
 	cout << s << endl;
 	file << s << endl;
 }
 
-int changeDifficulty(int difficulty)
-{
-	switch (difficulty)
-	{
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-		difficulty++;
-		break;
-
-	case 5:
-			difficulty = 1;
-		break;
-		
-	default:
-		difficulty = 1;
-		break;
-		
-	}
-	return difficulty;
-}
-
-string getDifficulty(int difficulty)
-{
-	string s;
-	switch (difficulty)
-	{
-	case 1:
-		s = "beginner";
-		break;
-	case 2:
-		s = "easy";
-		break;
-	case 3:
-		s = "medium";
-		break;
-	case 4:
-		s = "hard";
-		break;
-	case 5:
-		s = "challenging";
-	default:
-		break;
-	}
-	return s;
-}
-
+/* -----------------------------------------------------------------------------
+FUNCTION:          getBool()
+DESCRIPTION:       outputs true or false based on bool input
+RETURNS:           string
+NOTES:
+----------------------------------------------------------------------------- */
 string getBool(bool b)
 {
 	if (b)
@@ -167,6 +161,13 @@ string getBool(bool b)
 	}
 }
 
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          drawMenu()
+DESCRIPTION:       draws main menu to screen
+RETURNS:           void
+NOTES:
+----------------------------------------------------------------------------- */
 void drawMenu(vector <char> choices, bool allowNegatives)
 {
 	system("cls");
@@ -184,6 +185,13 @@ void drawMenu(vector <char> choices, bool allowNegatives)
 		cout << "]" << endl;
 }
 
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          getChoice()
+DESCRIPTION:       gets user input
+RETURNS:           char
+NOTES:
+----------------------------------------------------------------------------- */
 char getChoice(vector <char> list)
 {
 	bool failed = false;
@@ -210,11 +218,26 @@ char getChoice(vector <char> list)
 	return choice;
 }
 
+
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          getRandomNumber()
+DESCRIPTION:       returns random number based on difficulty
+RETURNS:           int
+NOTES:
+----------------------------------------------------------------------------- */
 int getRandomNumber(int difficulty)
 {
 	return rand() % (int)(pow(10, difficulty) - (int)pow(10, difficulty - 1)) + (int)pow(10, difficulty - 1);
 }
 
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          verifyChoice()
+DESCRIPTION:       checks if the choice exists in the list
+RETURNS:           bool
+NOTES:
+----------------------------------------------------------------------------- */
 bool verifyChoice(vector <char> list, char choice)
 {
 	bool found = false;
@@ -232,8 +255,17 @@ bool verifyChoice(vector <char> list, char choice)
 	return found;
 }
 
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          getEquation()
+DESCRIPTION:       gets a random math problem for both correct and incorrect answers
+RETURNS:           string
+NOTES:
+----------------------------------------------------------------------------- */
 string getEquation(int difficulty, char type, int& x, int & y , bool allowNegatives)
 {
+
+
 	x = getRandomNumber(difficulty);
 	y = getRandomNumber(difficulty);
 	string z;
@@ -287,6 +319,13 @@ string getEquation(int difficulty, char type, int& x, int & y , bool allowNegati
 
 }
 
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          displayEquation()
+DESCRIPTION:       writes the math problem to be solved on the screen
+RETURNS:           void
+NOTES:
+----------------------------------------------------------------------------- */
 void displayEquation(char type, int x, int y, ofstream &file)
 {
 	stringstream ss;
@@ -320,15 +359,22 @@ void displayEquation(char type, int x, int y, ofstream &file)
 }
 
 
-
+/* -----------------------------------------------------------------------------
+FUNCTION:          displayAnswers()
+DESCRIPTION:       displays the 5 answers for math problems
+RETURNS:           void
+NOTES:
+----------------------------------------------------------------------------- */
 void displayAnswers( vector <char> choices, vector <string> listOfAnswers, ofstream &file )
 {
+	//cout << listOfAnswers.size() << endl << choices.size() << endl;
 	stringstream ss;
 	for (unsigned int i = 0; i < (choices.size() - 1); i++)
 	{
-			ss << choices[i] << ": " << listOfAnswers[i];
-			output(file, ss.str());
-			ss.str("");
+		
+		ss << choices[i] << ": " << listOfAnswers[i];
+		output(file, ss.str());
+		ss.str("");
 	}
 	ss << choices[choices.size() - 1] <<  ": None of the Above" ;
 	output(file, ss.str());
@@ -336,38 +382,70 @@ void displayAnswers( vector <char> choices, vector <string> listOfAnswers, ofstr
 
 }
 
-char getCorrectAnswer()
+/* -----------------------------------------------------------------------------
+FUNCTION:          getCorrectAnswer()
+DESCRIPTION:       returns random number between 0 and 4
+RETURNS:           int
+NOTES:
+----------------------------------------------------------------------------- */
+int getCorrectAnswer()
 {
 	return rand() % 5;
 }
 
+/* -----------------------------------------------------------------------------
+FUNCTION:          arithmatic()
+DESCRIPTION:       Gets random problems for user to solve
+RETURNS:           void
+NOTES:
+----------------------------------------------------------------------------- */
 void arithmatic(int difficulty, char type, bool allowNegatives, ofstream &file)
 {
 	
 	char choice;
 	string str;
-	string answer;
-	int x = 0, y = 0;
+	string answer, wrongAnswer;
+	int x = getRandomNumber(difficulty), y = getRandomNumber(difficulty);
 	vector <string> listOfAnswers;
 	vector <char> choices = { 'a', 'b', 'c', 'd', 'e' };
 	int correctAnswer = getCorrectAnswer();
-	
-	
+	answer = getEquation(difficulty, type, x, y, allowNegatives);
+
+
+	time_t currentTime = time(0);
+	struct tm * now = localtime(&currentTime);
+	file << now->tm_mon + 1 << '-';
+	file << now->tm_mday << '-';
+	file << now->tm_year + 1900 << ' ';
+	file << now->tm_hour << ':';
+	file << now->tm_min << ':';
+	file << now->tm_sec << endl;
+
 	for (int i = 0; i < 4; i++)
 	{
 		if (i == correctAnswer)
 		{
-
-			do{
+			while (checkDuplicateAnswers(answer, listOfAnswers))
+			{
 				answer = getEquation(difficulty, type, x, y, allowNegatives);
-			} while (checkDuplicateAnswers(answer, listOfAnswers));
+			}
+			listOfAnswers.push_back(answer);
 		}
 		else
 		{
-			answer = getWrongAnswer(difficulty, type, listOfAnswers, allowNegatives);
+			wrongAnswer = getWrongAnswer(difficulty, type, listOfAnswers, allowNegatives);
+			listOfAnswers.push_back(wrongAnswer);
 		}	
-		cout << answer << endl;
-		listOfAnswers.push_back(answer);
+		//cout << answer << endl;
+		
+	}
+
+	if (correctAnswer == 4)
+	{
+		while (checkDuplicateAnswers(answer, listOfAnswers))
+		{
+			answer = getEquation(difficulty, type, x, y, allowNegatives);
+		}
 	}
 	
 	for (int i = 0; i < 3; i++)
@@ -375,7 +453,6 @@ void arithmatic(int difficulty, char type, bool allowNegatives, ofstream &file)
 		system("cls");
 		displayEquation(type, x, y, file);
 		displayAnswers(choices, listOfAnswers, file);
-		cout << "Correct answer = " << correctAnswer << endl;
 		cout << "Please enter your choice: ";
 		choice = getChoice(choices);
 		str = choice;
@@ -400,6 +477,12 @@ void arithmatic(int difficulty, char type, bool allowNegatives, ofstream &file)
 	listOfAnswers.clear();
 }
 
+/* -----------------------------------------------------------------------------
+FUNCTION:          swapInt()
+DESCRIPTION:       swaps two int's value
+RETURNS:           void
+NOTES:
+----------------------------------------------------------------------------- */
 void swapInt(int& x, int& y)
 {
 	int z;
@@ -408,17 +491,30 @@ void swapInt(int& x, int& y)
 	x = z;
 }
 
-string getWrongAnswer(int difficulty, char type, vector <string> &listOfAnswers, bool allowNegatives)
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          getWrongAnswer()
+DESCRIPTION:       gets wrong answer for questions 
+RETURNS:           string
+NOTES:
+----------------------------------------------------------------------------- */
+string getWrongAnswer(int difficulty, char type, vector <string> listOfAnswers, bool allowNegatives)
 {
 	int x, y;
 	string value;
 	do{
 		value = getEquation(difficulty, type, x, y, allowNegatives);
 	} while (checkDuplicateAnswers(value, listOfAnswers));
-	listOfAnswers.push_back(value);
 	return value;
 }
 
+
+/* -----------------------------------------------------------------------------
+FUNCTION:          checkDuplicateAnswers()
+DESCRIPTION:       Checks input and returns true if it matches anything in list
+RETURNS:           bool
+NOTES:
+----------------------------------------------------------------------------- */
 bool checkDuplicateAnswers(string s, vector <string> listOfAnswers)
 {
 	bool b = false;

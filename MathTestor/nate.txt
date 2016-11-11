@@ -1,14 +1,148 @@
-PUT IN TIMESTAMP
-Seed :1478734873
+11-10-2016 22:8:49
+Seed :1478844529
 Difficulty : 1
 
 
-    6
-  + 2
+11-10-2016 22:8:53
+    3
+  / 1
 
 
-a: 11
-b: 11
-c: 8
-d: 16
+a: 7
+b: 5
+c: 2
+d: 3
 e: None of the Above
+d
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:8:59
+    2
+  / 1
+
+
+a: 3
+b: 2
+c: 5
+d: 1
+e: None of the Above
+b
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:4
+    5
+  / 5
+
+
+a: 3
+b: 1
+c: 7
+d: 5
+e: None of the Above
+b
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:8
+    9
+  / 9
+
+
+a: 1
+b: 3
+c: 5
+d: 4
+e: None of the Above
+a
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:12
+    8
+  / 8
+
+
+a: 7
+b: 8
+c: 1
+d: 3
+e: None of the Above
+c
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:18
+    8
+  - 8
+
+
+a: 4
+b: 8
+c: 0
+d: 2
+e: None of the Above
+c
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:21
+    7
+  / 1
+
+
+a: 5
+b: 8
+c: 7
+d: 2
+e: None of the Above
+c
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:25
+    6
+  / 1
+
+
+a: 2
+b: 1
+c: 7
+d: 6
+e: None of the Above
+d
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:36
+    4
+  / 2
+
+
+a: 1
+b: 2
+c: 3
+d: 7
+e: None of the Above
+b
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:42
+    2
+  / 2
+
+
+a: 1
+b: 3
+c: 2
+d: 5
+e: None of the Above
+a
+Correct Guess
+Accuracy: 100%
+11-10-2016 22:9:44
+    4
+  / 2
+
+
+a: 2
+b: 3
+c: 7
+d: 5
+e: None of the Above
+a
+Correct Guess
+Accuracy: 100%
